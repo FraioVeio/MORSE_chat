@@ -18,6 +18,8 @@ public class MorseThread extends Thread {
     private AudioFormat af;
     private SourceDataLine sdl;
     
+    public float freq = 1000;
+    
     public volatile boolean done;
     public static int treshold;
     
@@ -37,12 +39,10 @@ public class MorseThread extends Thread {
     
     @Override
     public void run() {
-        float freq = 1000;
-        
         if(send) {
             // Send
             try {
-                buf = new byte[ 1024 ];
+                buf = new byte[1024];
                 af = new AudioFormat( (float )44100, 8, 1, true, false );
                 sdl = AudioSystem.getSourceDataLine( af );
                 sdl.open();
@@ -87,9 +87,9 @@ public class MorseThread extends Thread {
             
             for(int i=0;i<morse.size();i++) {
                 double angle = i / ( (float )44100 / freq ) * 2.0 * Math.PI;
-                buf[i%1024] = morse.get(i) ? (byte)( Math.sin( angle ) * 100 ) : 0;
-                if(i%1024 == 1023)
-                    sdl.write( buf, 0, 1024 );
+                buf[i%buf.length] = morse.get(i) ? (byte)( Math.sin( angle ) * 100 ) : 0;
+                if(i%buf.length == buf.length-1)
+                    sdl.write( buf, 0, buf.length );
             }
             sdl.write( buf, 0, morse.size()%1024+1 );
             
@@ -105,7 +105,8 @@ public class MorseThread extends Thread {
             AudioFormat format = new AudioFormat(44100, 16, 2, true, true);
             DataLine.Info targetInfo = new DataLine.Info(TargetDataLine.class, format);
             
-            byte[] rollingmean = new byte[durationIndex(50)];    // filter mean micros
+            byte[] rollingmean = new byte[durationIndex(10*2000*(float)Math.PI*1/freq)];    // filter mean micros
+            System.out.println();
             int rollingmeanindex = 0;
             
             long timeOld = System.nanoTime();
@@ -206,7 +207,7 @@ public class MorseThread extends Thread {
         done = true;
     }
     
-    public static void dataClean(ArrayList<Integer> data) {
+    public void dataClean(ArrayList<Integer> data) {
         //ArrayList<Integer> old = (ArrayList<Integer>) data.clone();
         
         boolean ok = false;
@@ -215,7 +216,7 @@ public class MorseThread extends Thread {
             for(int i=0;i<data.size();i++) {
                 int d = data.get(i);
 
-                if(d<20) {
+                if(d<duration*2/3) {
                     if(i != 0) {
                         data.set(i-1, data.get(i-1) + data.get(i) + ((i+1 < data.size()) ? data.get(i+1) : 0));
                         data.remove(i);
