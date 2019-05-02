@@ -21,6 +21,8 @@ public class MorseChat extends javax.swing.JFrame {
         speedField = new javax.swing.JTextField();
         pb = new javax.swing.JProgressBar();
         receiveButton = new javax.swing.JToggleButton();
+        thresholdSlider = new javax.swing.JSlider();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("MORSE chat");
@@ -53,6 +55,11 @@ public class MorseChat extends javax.swing.JFrame {
             }
         });
 
+        thresholdSlider.setMaximum(127);
+        thresholdSlider.setValue(25);
+
+        jLabel2.setText("Threshold:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -69,7 +76,10 @@ public class MorseChat extends javax.swing.JFrame {
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(speedField, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 113, Short.MAX_VALUE)))
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(thresholdSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)))
                 .addContainerGap())
             .addComponent(pb, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(statusField)
@@ -80,12 +90,15 @@ public class MorseChat extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(sendButton)
-                    .addComponent(jLabel1)
-                    .addComponent(speedField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(receiveButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(sendButton)
+                        .addComponent(jLabel1)
+                        .addComponent(speedField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(receiveButton)
+                        .addComponent(jLabel2))
+                    .addComponent(thresholdSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(9, 9, 9)
                 .addComponent(statusField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(pb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -103,10 +116,18 @@ public class MorseChat extends javax.swing.JFrame {
         MorseThread mt = new MorseThread(this, MorseTranslator.asciiToMorse(text1.getText()), Float.parseFloat(speedField.getText()));
         mt.start();
     }//GEN-LAST:event_sendButtonActionPerformed
-
+    
+    private MorseThread mtasc;
+    
     private void receiveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_receiveButtonActionPerformed
         if(receiveButton.isSelected()) {
             // Ascolta
+            
+            sendButton.setEnabled(false);
+            statusField.setText("");
+            
+            mtasc = new MorseThread(this, false, Float.parseFloat(speedField.getText()));
+            mtasc.start();
             
         } else {
             // Smetti di ascoltare
@@ -126,12 +147,14 @@ public class MorseChat extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     public javax.swing.JProgressBar pb;
     public javax.swing.JToggleButton receiveButton;
     public javax.swing.JButton sendButton;
     private javax.swing.JTextField speedField;
     public javax.swing.JTextField statusField;
-    private javax.swing.JTextArea text1;
+    public javax.swing.JTextArea text1;
+    public javax.swing.JSlider thresholdSlider;
     // End of variables declaration//GEN-END:variables
 }
