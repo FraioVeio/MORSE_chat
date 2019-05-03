@@ -102,7 +102,7 @@ public class MorseThread extends Thread {
             frame.pb.setIndeterminate(false);
         } else {
             // Receive
-            AudioFormat format = new AudioFormat(44100, 16, 2, true, true);
+            AudioFormat format = new AudioFormat(44100, 8, 1, true, true);
             DataLine.Info targetInfo = new DataLine.Info(TargetDataLine.class, format);
             
             byte[] rollingmean = new byte[durationIndex(10*2000*(float)Math.PI*1/freq)];    // filter mean micros
